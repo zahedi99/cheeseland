@@ -1,0 +1,117 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Cheese Pizza | Choose Your Branch</title>
+
+  <!-- site CSS -->
+  <link rel="stylesheet" href="./style.css"/>
+
+  <!-- Leaflet (map) -->
+  <link
+    rel="stylesheet"
+    href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+    integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY="
+    crossorigin=""
+  />
+</head>
+
+<body>
+  <!-- TOP BAR -->
+  <header class="topbar">
+    <div class="topbar__inner">
+      <div class="brand">
+        <div class="brand__logo">
+          <img src="./assets/logo.png" alt="Cheese Pizza Logo">
+        </div>
+        <div class="brand__text">
+          <div class="brand__name">Cheese Pizza</div>
+          <div class="brand__tag">ALWAYS FRESH • ALWAYS BEST</div>
+        </div>
+      </div>
+
+      <nav class="nav">
+        <a class="active" href="./index.html">Home</a>
+        <a href="#branches">Branches</a>
+        <a href="#mapWrap">Map</a>
+      </nav>
+    </div>
+  </header>
+<section class="logoStrip">
+  <img class="logoStrip__img" src="./assets/logo.png" alt="Cheese Pizza Logo">
+</section>
+  <main class="container">
+    <!-- HERO -->
+    <section class="hero">
+      <div class="heroGrid">
+        <div class="heroLeft">
+          <h1 class="headline">
+            Choose your local<br/>
+            <span class="accent">Cheese Pizza</span>
+          </h1>
+
+          <p class="subtext">
+            All branches are listed below. Type your area / postcode to highlight the nearest branch
+            (it will move to the top). Clicking a branch opens its website in a new tab.
+          </p>
+
+          <div class="controls">
+            <label class="label" for="branchSelect">Select a restaurant</label>
+
+            <div class="selectRow">
+              <select id="branchSelect" class="select"></select>
+              <button id="resetBtn" class="btn btn--ghost" type="button">Reset</button>
+            </div>
+
+            <input id="searchInput" class="input" placeholder="Search: e.g., Harlow, Stevenage, Kent, TN1, SG2…" />
+
+            <button id="findNearestBtn" class="btn btn--red" type="button">Find Branch</button>
+            <button id="useLocationBtn" class="btn btn--ghost" type="button">Use my location</button>
+
+            <div id="nearestText" class="nearestLine"></div>
+          </div>
+        </div>
+
+        <aside class="glass tipCard">
+          <div class="tipTitle">Quick tip</div>
+          <p class="tipText">
+            You can type the outward code only (like SG2 or AL1). The nearest match will be highlighted at the top.
+          </p>
+          <span class="tipPill">Fast • Simple • Local</span>
+        </aside>
+      </div>
+    </section>
+
+    
+ <section id="mapWrap" class="mapWrap">
+  <div class="mapCard">
+    <div id="map"></div>
+    <div class="mapHint">Tip: click a marker to open the branch card.</div>
+  </div>
+
+  
+</section>
+
+
+    <!-- BRANCHES -->
+    <section id="branches">
+      <h2 class="sectionTitle">Branches</h2>
+      <div id="cards" class="cards"></div>
+    </section>
+
+
+  <footer class="footer">
+    © <span id="year"></span> Cheese Pizza
+  </footer>
+
+  <!-- Leaflet JS -->
+  <script
+    src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+    integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo="
+    crossorigin=""
+  ></script>
+
+  <script src="./script.js"></script>
+</body>
+</html>
