@@ -1,6 +1,4 @@
-
 // BRANCH DATA (replace URLs later)
-
 const branches = [
   {
     id: "harlow",
@@ -49,9 +47,7 @@ const branches = [
   }
 ];
 
-
 // HELPERS
-
 const $ = (sel) => document.querySelector(sel);
 
 function escapeHtml(s) {
@@ -67,41 +63,7 @@ function directionsLink(lat, lng) {
   return `https://www.google.com/maps/dir/?api=1&destination=${lat},${lng}`;
 }
 
-function toRad(deg) {
-  return deg * Math.PI / 180;
-}
-
-function haversineKm(aLat, aLng, bLat, bLng) {
-  const R = 6371;
-  const dLat = toRad(bLat - aLat);
-  const dLng = toRad(bLng - aLng);
-  const s1 = Math.sin(dLat / 2) ** 2;
-  const s2 =
-    Math.cos(toRad(aLat)) *
-    Math.cos(toRad(bLat)) *
-    Math.sin(dLng / 2) ** 2;
-  const c = 2 * Math.atan2(Math.sqrt(s1 + s2), Math.sqrt(1 - s1 - s2));
-  return R * c;
-}
-
-function findClosestBranchTo(userLat, userLng) {
-  let best = null;
-  let bestDistance = Infinity;
-
-  for (const b of branches) {
-    const d = haversineKm(userLat, userLng, b.lat, b.lng);
-    if (d < bestDistance) {
-      bestDistance = d;
-      best = b;
-    }
-  }
-
-  return { best, bestDistance };
-}
-
-
 // MAP INIT (LEAFLET)
-
 const map = L.map("map", {
   zoomControl: true,
   scrollWheelZoom: false
@@ -118,9 +80,7 @@ map.fitBounds(bounds.pad(0.25));
 // Ensure correct render when layout changes
 setTimeout(() => map.invalidateSize(), 300);
 
-
 // MARKERS
-
 const markerById = new Map();
 
 function makeMarker(branch) {
@@ -150,19 +110,11 @@ function makeMarker(branch) {
 branches.forEach(makeMarker);
 
 // UI REFERENCES
-
 const select = $("#branchSelect");
 const resetBtn = $("#resetBtn");
 const cardsWrap = $("#cards");
-const searchInput = $("#searchInput");
-const findNearestBtn = $("#findNearestBtn");
-const useLocationBtn = $("#useLocationBtn");   // <-- NEW
-const nearestText = $("#nearestText");
-
-let userMarker = null; // <-- NEW (your location marker)
 
 // RENDERING
-
 function buildSelect(list) {
   select.innerHTML = "";
 
@@ -192,7 +144,6 @@ function buildCards(list, activeId = null) {
 
     card.innerHTML = `
       <div class="card__title">${escapeHtml(b.name)}</div>
-      ${isActive ? `<div class="badge">Nearest</div>` : ``}
       <div class="card__meta">
         ${escapeHtml(b.area)} (${escapeHtml(b.outward)})
       </div>
@@ -210,19 +161,7 @@ function buildCards(list, activeId = null) {
   });
 }
 
-function filterBranches(q) {
-  q = q.trim().toLowerCase();
-  if (!q) return branches;
-
-  return branches.filter(b =>
-    b.name.toLowerCase().includes(q) ||
-    b.area.toLowerCase().includes(q) ||
-    b.outward.toLowerCase().includes(q)
-  );
-}
-
 // ACTIVE BRANCH HANDLING
-
 function setActiveBranch(branchId, opts = { openPopup: true, scrollToCard: true }) {
   const b = branches.find(x => x.id === branchId);
   if (!b) return;
@@ -234,7 +173,6 @@ function setActiveBranch(branchId, opts = { openPopup: true, scrollToCard: true 
 
   // UI update
   select.value = branchId;
-  if (nearestText) nearestText.textContent = `Nearest branch: ${b.name}`;
 
   // Move selected to top + highlight yellow
   const reordered = [b, ...branches.filter(x => x.id !== b.id)];
@@ -247,127 +185,23 @@ function setActiveBranch(branchId, opts = { openPopup: true, scrollToCard: true 
   }
 }
 
-
 // INITIAL RENDER
-
 buildSelect(branches);
 buildCards(branches);
 
-
 // EVENTS
-
-
-// Dropdown
 select.addEventListener("change", () => {
   if (select.value) {
     setActiveBranch(select.value, { openPopup: true, scrollToCard: true });
   }
 });
 
-// Search filter
-searchInput.addEventListener("input", () => {
-  const list = filterBranches(searchInput.value);
-  buildSelect(list);
-  buildCards(list);
-});
-
-// Reset
 resetBtn.addEventListener("click", () => {
-  searchInput.value = "";
-  if (nearestText) nearestText.textContent = "";
   select.value = "";
   buildSelect(branches);
   buildCards(branches);
   map.fitBounds(bounds.pad(0.25));
-
-  // remove user marker if exists
-  if (userMarker) {
-    map.removeLayer(userMarker);
-    userMarker = null;
-  }
 });
-
-// Find nearest (by outward code first, fallback to map center)
-findNearestBtn.addEventListener("click", () => {
-  const q = searchInput.value.trim().toUpperCase();
-  if (!q) {
-    if (nearestText) nearestText.textContent = "Type an outward code (e.g. TN1, SG1)";
-    return;
-  }
-
-  const outwardMatch = branches.find(b => b.outward.startsWith(q));
-  if (outwardMatch) {
-    setActiveBranch(outwardMatch.id, { openPopup: true, scrollToCard: true });
-    return;
-  }
-
-  const center = map.getCenter();
-  const { best } = findClosestBranchTo(center.lat, center.lng);
-  if (best) setActiveBranch(best.id, { openPopup: true, scrollToCard: true });
-});
-
-// NEW: Use my location → recommend closest branch
-if (useLocationBtn) {
-  useLocationBtn.addEventListener("click", () => {
-    if (!navigator.geolocation) {
-      if (nearestText) nearestText.textContent = "Geolocation is not supported by your browser.";
-      return;
-    }
-
-    if (nearestText) nearestText.textContent = "Getting your location…";
-
-    navigator.geolocation.getCurrentPosition(
-      (pos) => {
-        const userLat = pos.coords.latitude;
-        const userLng = pos.coords.longitude;
-
-        // Add or update "You are here" marker
-        if (userMarker) map.removeLayer(userMarker);
-
-        userMarker = L.circleMarker([userLat, userLng], {
-          radius: 8,
-          weight: 2,
-          fillOpacity: 0.6
-        }).addTo(map);
-
-        userMarker.bindPopup("You are here").openPopup();
-
-        // Find closest branch
-        const { best, bestDistance } = findClosestBranchTo(userLat, userLng);
-        if (!best) {
-          if (nearestText) nearestText.textContent = "No branches found.";
-          return;
-        }
-
-        // Fit map to show user + closest branch
-        const pairBounds = L.latLngBounds([[userLat, userLng], [best.lat, best.lng]]);
-        map.fitBounds(pairBounds.pad(0.35));
-        setTimeout(() => map.invalidateSize(), 200);
-
-        // Highlight closest branch
-        setActiveBranch(best.id, { openPopup: true, scrollToCard: true });
-
-        if (nearestText) {
-          nearestText.textContent = `Closest branch: ${best.name} (~${bestDistance.toFixed(1)} km away)`;
-        }
-      },
-      (err) => {
-        if (!nearestText) return;
-
-        if (err.code === 1) {
-          nearestText.textContent = "Location permission denied. Please allow location access.";
-        } else {
-          nearestText.textContent = "Could not get your location. Try again.";
-        }
-      },
-      {
-        enableHighAccuracy: true,
-        timeout: 10000,
-        maximumAge: 60000
-      }
-    );
-  });
-}
 
 // Nav map resize fix
 document.querySelectorAll('a[href="#mapWrap"]').forEach(a => {
@@ -376,6 +210,6 @@ document.querySelectorAll('a[href="#mapWrap"]').forEach(a => {
   });
 });
 
-// Footer year (if present)
+// Footer year
 const y = $("#year");
 if (y) y.textContent = new Date().getFullYear();

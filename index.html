@@ -23,7 +23,6 @@
     <div class="topbar__inner">
       <div class="brand">
         <div class="brand__logo">
-          <!-- small header logo -->
           <img src="./assets/logo.png" alt="Cheese Pizza Logo">
         </div>
         <div class="brand__text">
@@ -40,8 +39,8 @@
     </div>
   </header>
 
-  <!-- BIG LOGO UNDER HEADER (main logo) -->
-  <section class="logoStrip">
+  <!-- BIG LOGO UNDER HEADER (Farmhouse-style) -->
+  <section class="logoStrip" aria-label="Brand logo">
     <img class="logoStrip__img" src="./assets/logo.png" alt="Cheese Pizza Logo">
   </section>
 
@@ -56,8 +55,7 @@
           </h1>
 
           <p class="subtext">
-            All branches are listed below. Type your area / postcode to highlight the nearest branch
-            (it will move to the top). Clicking a branch opens its website in a new tab.
+            Select your branch from the list below. Clicking a branch opens its website in a new tab.
           </p>
 
           <div class="controls">
@@ -67,17 +65,8 @@
               <select id="branchSelect" class="select"></select>
               <button id="resetBtn" class="btn btn--ghost" type="button">Reset</button>
             </div>
-
-            <input id="searchInput" class="input" placeholder="Search: e.g., Harlow, Stevenage, Kent, TN1, SG2…" />
-
-            <button id="findNearestBtn" class="btn btn--red" type="button">Find Branch</button>
-            <button id="useLocationBtn" class="btn btn--ghost" type="button">Use my location</button>
-
-            <div id="nearestText" class="nearestLine"></div>
           </div>
         </div>
-
-        <!-- QUICK TIP REMOVED (CUT) -->
       </div>
     </section>
 
