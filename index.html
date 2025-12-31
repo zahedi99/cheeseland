@@ -5,7 +5,6 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Cheese Pizza | Choose Your Branch</title>
 
-  <!-- site CSS -->
   <link rel="stylesheet" href="./style.css"/>
 
   <!-- Leaflet (map) -->
@@ -46,7 +45,7 @@
 
   <main class="container">
     <!-- HERO -->
-    <section class="hero">
+    <section class="hero" id="hero">
       <div class="heroGrid">
         <div class="heroLeft">
           <h1 class="headline">
@@ -70,26 +69,24 @@
       </div>
     </section>
 
-   
-
     <!-- BRANCHES -->
     <section id="branches">
       <h2 class="sectionTitle">Branches</h2>
       <div id="cards" class="cards"></div>
     </section>
 
-    <footer class="footer">
-      © <span id="year"></span> Cheese Pizza
-    </footer>
-  </main>
-
-   <!-- MAP -->
+    <!-- MAP (moved here: directly under branches) -->
     <section id="mapWrap" class="mapWrap">
       <div class="mapCard">
         <div id="map"></div>
         <div class="mapHint">Tip: click a marker to open the branch card.</div>
       </div>
     </section>
+
+    <footer class="footer">
+      © <span id="year"></span> Cheese Pizza
+    </footer>
+  </main>
 
   <!-- Leaflet JS -->
   <script

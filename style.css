@@ -16,6 +16,9 @@
 
   --max: 1160px;
   --font: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Arial;
+
+  /* 0 = fully visible background, 1 = fully faded */
+  --heroFade: 0;
 }
 
 /* RESET */
@@ -143,11 +146,14 @@ body{
   background:url("./assets/Cheese_pizza_shop.jpg") center/cover no-repeat;
   z-index:0;
 
-  /* 2) "hoverable / sticks while scrolling" effect on desktop */
   background-attachment: fixed;
   transform: scale(1.02);
-}
 
+  /* ✅ fade as you scroll */
+  opacity: calc(1 - var(--heroFade));
+  filter: brightness(1.10) saturate(1.05);
+  transition: opacity .18s linear;
+}
 
 .hero::after{
   content:"";
@@ -202,7 +208,6 @@ body{
   gap:10px;
 }
 
- 
 .select{
   width:100%;
   padding:13px 14px;
@@ -216,13 +221,11 @@ body{
     0 18px 40px rgba(0,0,0,.25);
 }
 
-/* dropdown list small styling (works in most browsers; some OS UI may limit it) */
 .select option{
   background: #06102c;
   color: rgba(243,196,0,.95);
 }
 
-/* Hover/active option  */
 .select option:checked,
 .select option:hover{
   background: #0b1a44;
@@ -244,7 +247,6 @@ body{
   border:none;
 }
 
-/* keep reset readable */
 .btn--ghost{
   background:rgba(255,255,255,.10);
   border:1px solid rgba(255,255,255,.16);
@@ -273,6 +275,7 @@ body{
   background:rgba(255,255,255,.06);
   border:1px solid var(--line);
   box-shadow:var(--shadow);
+  cursor:pointer;
 }
 
 .card--active{

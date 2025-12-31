@@ -1,6 +1,4 @@
-
 // Branch data
-
 const branches = [
   {
     id: "harlow",
@@ -70,9 +68,26 @@ const select = $("#branchSelect");
 const resetBtn = $("#resetBtn");
 const cardsWrap = $("#cards");
 
+// ✅ HERO FADE ON SCROLL (Farmhouse-like)
+(function heroFadeOnScroll(){
+  const hero = $("#hero");
+  if (!hero) return;
+
+  const setFade = () => {
+    const rect = hero.getBoundingClientRect();
+    const h = Math.max(1, hero.offsetHeight);
+    // how much hero has scrolled past (0..1)
+    const progressed = Math.min(1, Math.max(0, (-rect.top) / (h * 0.75)));
+    document.documentElement.style.setProperty("--heroFade", progressed.toFixed(3));
+  };
+
+  setFade();
+  window.addEventListener("scroll", setFade, { passive: true });
+  window.addEventListener("resize", setFade);
+})();
+
 
 // Map init (Leaflet)
-
 const map = L.map("map", {
   zoomControl: true,
   scrollWheelZoom: false
@@ -91,7 +106,6 @@ setTimeout(() => map.invalidateSize(), 250);
 
 // ===============================
 // Markers
-
 const markerById = new Map();
 
 branches.forEach((branch) => {
@@ -118,7 +132,6 @@ branches.forEach((branch) => {
 });
 
 // Render dropdown + cards
-
 function buildSelect(list) {
   select.innerHTML = "";
 
@@ -161,7 +174,6 @@ function buildCards(list, activeId = null) {
 }
 
 // Active branch logic
-
 function setActiveBranch(branchId, opts = { openPopup: true, scrollToCard: true }) {
   const b = branches.find(x => x.id === branchId);
   if (!b) return;
@@ -205,11 +217,10 @@ resetBtn.addEventListener("click", () => {
 // Nav jump to map: resize map after scroll
 document.querySelectorAll('a[href="#mapWrap"]').forEach(a => {
   a.addEventListener("click", () => {
-    // let browser scroll first, then resize map
     setTimeout(() => map.invalidateSize(), 300);
   });
 });
 
-// Footer 
+// Footer
 const y = $("#year");
 if (y) y.textContent = new Date().getFullYear();
