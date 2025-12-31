@@ -1,4 +1,6 @@
-// BRANCH DATA (replace URLs later)
+
+// Branch data
+
 const branches = [
   {
     id: "harlow",
@@ -47,7 +49,7 @@ const branches = [
   }
 ];
 
-// HELPERS
+// Helpers
 const $ = (sel) => document.querySelector(sel);
 
 function escapeHtml(s) {
@@ -63,7 +65,14 @@ function directionsLink(lat, lng) {
   return `https://www.google.com/maps/dir/?api=1&destination=${lat},${lng}`;
 }
 
-// MAP INIT (LEAFLET)
+// UI refs
+const select = $("#branchSelect");
+const resetBtn = $("#resetBtn");
+const cardsWrap = $("#cards");
+
+
+// Map init (Leaflet)
+
 const map = L.map("map", {
   zoomControl: true,
   scrollWheelZoom: false
@@ -77,21 +86,22 @@ L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
 const bounds = L.latLngBounds(branches.map(b => [b.lat, b.lng]));
 map.fitBounds(bounds.pad(0.25));
 
-// Ensure correct render when layout changes
-setTimeout(() => map.invalidateSize(), 300);
+// Make sure map renders correctly after layout / scroll
+setTimeout(() => map.invalidateSize(), 250);
 
-// MARKERS
+// ===============================
+// Markers
+
 const markerById = new Map();
 
-function makeMarker(branch) {
+branches.forEach((branch) => {
   const marker = L.marker([branch.lat, branch.lng]).addTo(map);
 
   const popupHtml = `
-    <div style="min-width:180px">
+    <div style="min-width:200px">
       <strong>${escapeHtml(branch.name)}</strong><br/>
-      <span style="font-size:12px; color:#6b7280">
-        ${escapeHtml(branch.area)}
-      </span><br/><br/>
+      <span style="font-size:12px;opacity:.8">${escapeHtml(branch.area)} (${escapeHtml(branch.outward)})</span>
+      <br/><br/>
       <a href="${branch.url}" target="_blank" rel="noopener">Visit / Order</a>
       &nbsp;|&nbsp;
       <a href="${directionsLink(branch.lat, branch.lng)}" target="_blank" rel="noopener">Directions</a>
@@ -105,16 +115,10 @@ function makeMarker(branch) {
   });
 
   markerById.set(branch.id, marker);
-}
+});
 
-branches.forEach(makeMarker);
+// Render dropdown + cards
 
-// UI REFERENCES
-const select = $("#branchSelect");
-const resetBtn = $("#resetBtn");
-const cardsWrap = $("#cards");
-
-// RENDERING
 function buildSelect(list) {
   select.innerHTML = "";
 
@@ -139,17 +143,12 @@ function buildCards(list, activeId = null) {
     card.className = "card";
     card.dataset.branchId = b.id;
 
-    const isActive = b.id === activeId;
-    if (isActive) card.classList.add("card--active");
+    if (b.id === activeId) card.classList.add("card--active");
 
     card.innerHTML = `
       <div class="card__title">${escapeHtml(b.name)}</div>
-      <div class="card__meta">
-        ${escapeHtml(b.area)} (${escapeHtml(b.outward)})
-      </div>
-      <a class="btnOrder" href="${b.url}" target="_blank" rel="noopener">
-        Visit / Order
-      </a>
+      <div class="card__meta">${escapeHtml(b.area)} (${escapeHtml(b.outward)})</div>
+      <a class="btnOrder" href="${b.url}" target="_blank" rel="noopener">Visit / Order</a>
     `;
 
     card.addEventListener("click", (e) => {
@@ -161,41 +160,41 @@ function buildCards(list, activeId = null) {
   });
 }
 
-// ACTIVE BRANCH HANDLING
+// Active branch logic
+
 function setActiveBranch(branchId, opts = { openPopup: true, scrollToCard: true }) {
   const b = branches.find(x => x.id === branchId);
   if (!b) return;
 
-  // Map focus
+  // Set dropdown
+  select.value = branchId;
+
+  // Focus map
   map.setView([b.lat, b.lng], 12, { animate: true });
   const marker = markerById.get(branchId);
   if (marker && opts.openPopup) marker.openPopup();
 
-  // UI update
-  select.value = branchId;
-
-  // Move selected to top + highlight yellow
+  // Move selected branch card to top
   const reordered = [b, ...branches.filter(x => x.id !== b.id)];
   buildCards(reordered, b.id);
 
-  // Scroll to the highlighted card
+  // Scroll to highlighted card
   if (opts.scrollToCard) {
     const card = document.querySelector(`.card[data-branch-id="${branchId}"]`);
     if (card) card.scrollIntoView({ behavior: "smooth", block: "center" });
   }
 }
 
-// INITIAL RENDER
+// Initial render
 buildSelect(branches);
 buildCards(branches);
 
-// EVENTS
+// Dropdown change
 select.addEventListener("change", () => {
-  if (select.value) {
-    setActiveBranch(select.value, { openPopup: true, scrollToCard: true });
-  }
+  if (select.value) setActiveBranch(select.value, { openPopup: true, scrollToCard: true });
 });
 
+// Reset
 resetBtn.addEventListener("click", () => {
   select.value = "";
   buildSelect(branches);
@@ -203,13 +202,14 @@ resetBtn.addEventListener("click", () => {
   map.fitBounds(bounds.pad(0.25));
 });
 
-// Nav map resize fix
+// Nav jump to map: resize map after scroll
 document.querySelectorAll('a[href="#mapWrap"]').forEach(a => {
   a.addEventListener("click", () => {
+    // let browser scroll first, then resize map
     setTimeout(() => map.invalidateSize(), 300);
   });
 });
 
-// Footer year
+// Footer 
 const y = $("#year");
 if (y) y.textContent = new Date().getFullYear();
