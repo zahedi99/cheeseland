@@ -34,7 +34,7 @@ const branches = [
     outward: "ME4",
     lat: 51.38,
     lng: 0.53,
-    url: "https://example.com/chatham"
+    url: "https://cheesepizza.uk/"
   },
   {
     id: "tunbridgewells",
@@ -68,7 +68,7 @@ const select = $("#branchSelect");
 const resetBtn = $("#resetBtn");
 const cardsWrap = $("#cards");
 
-// ✅ HERO FADE ON SCROLL (Farmhouse-like)
+//  HERO FADE ON SCROLL (Farmhouse-like)
 (function heroFadeOnScroll(){
   const hero = $("#hero");
   if (!hero) return;

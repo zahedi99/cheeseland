@@ -118,7 +118,7 @@ a, p, h1, h2, h3{
 .nav{
   display:flex;
   gap:10px;
-  flex-wrap:wrap; /* ✅ avoid overflow on mobile */
+  flex-wrap:wrap; /*  avoid overflow on mobile */
   justify-content:flex-end;
 }
 
@@ -308,7 +308,7 @@ a, p, h1, h2, h3{
   border:1px solid var(--line);
   box-shadow:var(--shadow);
   cursor:pointer;
-  min-width:0; /* ✅ prevent overflow */
+  min-width:0; /* prevent overflow */
 }
 
 .card--active{
